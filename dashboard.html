@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" x-data="vendorDashboard()" :class="{'overflow-hidden': modalOpen}">
+<html lang="id" x-data="seoDashboard()" :class="{'overflow-hidden': modalOpen}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendor Dashboard - Imersa</title>
+  <title>SEO Dashboard - Imersa</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
@@ -41,25 +41,29 @@
     }
     
     /* Style tambahan */
-    .hamburger-btn {
-      transition: all 0.2s ease;
+    .hamburger-btn { transition: all 0.2s ease; }
+    .hamburger-btn:hover { transform: scale(1.1); opacity: 0.8; }
+    .badge { font-size: 0.65rem; padding: 0.15rem 0.35rem; }
+
+    /* ====== TOPBAR THEME: selaras dengan landing page (ungu-biru) ====== */
+    .app-topbar{
+      background:
+        radial-gradient(160% 200% at 85% -40%, rgba(167, 191, 255, 0.65) 0%, rgba(37, 99, 235, 0.55) 40%, rgba(30, 64, 175, 0.55) 70%),
+        linear-gradient(100deg, #7C3AED 0%, #2563EB 45%, #1E40AF 100%);
+      background-blend-mode: overlay, normal;
+      color:#fff;
+      box-shadow: 0 6px 24px rgba(37,99,235,.25);
     }
-    .hamburger-btn:hover {
-      transform: scale(1.1);
-      opacity: 0.8;
+    .app-topbar .fa-bars,
+    .app-topbar .fa-bell{ color:#fff; }
+    .app-topbar .fa-search{ color:rgba(255,255,255,.8); }
+    .app-topbar input{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.25);
+      color:#fff;
     }
-    .badge {
-      font-size: 0.65rem;
-      padding: 0.15rem 0.35rem;
-    }
-    .file-upload {
-      border: 2px dashed #d1d5db;
-      transition: all 0.3s;
-    }
-    .file-upload:hover {
-      border-color: #3b82f6;
-      background-color: #f0f7ff;
-    }
+    .app-topbar input::placeholder{ color: rgba(255,255,255,.8); }
+    .app-topbar .hamburger-btn:hover{ opacity:.9; }
   </style>
 </head>
 <body class="bg-gray-50 font-sans" x-cloak>
@@ -74,7 +78,7 @@
     >
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-2xl font-bold flex items-center">
-          <i class="fas fa-store mr-2"></i> Vendor Area
+          <i class="fas fa-chart-line mr-2"></i> Imersa SEO
         </h1>
         <button @click="sidebarOpen = false" class="md:hidden">
           <i class="fas fa-times"></i>
@@ -92,29 +96,47 @@
              class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
              :class="activeMenu === 'Dashboard' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
             <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
-            <span x-show="stats.newLeads > 0" class="badge bg-blue-500 rounded-full ml-auto" x-text="stats.newLeads"></span>
+            <span class="badge bg-blue-500 rounded-full ml-auto" x-text="stats.newLeads"></span>
           </a>
 
           <a href="#"
-             @click.prevent="setActive('Leads')"
+             @click.prevent="setActive('LeadDistribution')"
              class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
-             :class="activeMenu === 'Leads' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-            <i class="fas fa-bullseye mr-3"></i> Leads Saya
-            <span x-show="stats.unprocessedLeads > 0" class="badge bg-yellow-500 rounded-full ml-auto" x-text="stats.unprocessedLeads"></span>
-          </a>
-
-          <a href="#"
-             @click.prevent="setActive('Products')"
-             class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
-             :class="activeMenu === 'Products' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-            <i class="fas fa-boxes mr-3"></i> Produk/Layanan
+             :class="activeMenu === 'LeadDistribution' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
+            <i class="fas fa-share-alt mr-3"></i> Distribusi Leads
           </a>
 
           <a href="#"
              @click.prevent="setActive('SEOReports')"
              class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
              :class="activeMenu === 'SEOReports' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-            <i class="fas fa-chart-line mr-3"></i> Ranking Keyword
+            <i class="fas fa-chart-line mr-3"></i> Laporan SEO
+          </a>
+
+          <a href="#"
+             @click.prevent="setActive('KeywordAnalysis')"
+             class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
+             :class="activeMenu === 'KeywordAnalysis' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
+            <i class="fas fa-key mr-3"></i> Analisis Keyword
+          </a>
+        </div>
+
+        <div class="mb-6">
+          <p class="text-blue-200 uppercase text-xs font-semibold mb-2">Kolaborasi</p>
+
+          <a href="#"
+             @click.prevent="setActive('VendorChat')"
+             class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
+             :class="activeMenu === 'VendorChat' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
+            <i class="fas fa-comments mr-3"></i> Chat Vendor
+            <span class="badge bg-blue-500 rounded-full ml-auto" x-text="stats.unreadMessages"></span>
+          </a>
+
+          <a href="#"
+             @click.prevent="setActive('Feedback')"
+             class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
+             :class="activeMenu === 'Feedback' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
+            <i class="fas fa-comment-dots mr-3"></i> Feedback
           </a>
         </div>
 
@@ -122,40 +144,21 @@
           <p class="text-blue-200 uppercase text-xs font-semibold mb-2">Komisi</p>
 
           <a href="#"
-             @click.prevent="setActive('Commissions')"
+             @click.prevent="setActive('Commission')"
              class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
-             :class="activeMenu === 'Commissions' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-            <i class="fas fa-money-bill-wave mr-3"></i> Pembayaran Komisi
-            <span x-show="stats.unpaidCommissions > 0" class="badge bg-green-500 rounded-full ml-auto" x-text="stats.unpaidCommissions"></span>
-          </a>
-        </div>
-
-        <div class="mb-6">
-          <p class="text-blue-200 uppercase text-xs font-semibold mb-2">Komunikasi</p>
-
-          <a href="#"
-             @click.prevent="setActive('Messages')"
-             class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
-             :class="activeMenu === 'Messages' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-            <i class="fas fa-comments mr-3"></i> Pesan
-            <span x-show="stats.unreadMessages > 0" class="badge bg-blue-500 rounded-full ml-auto" x-text="stats.unreadMessages"></span>
-          </a>
-
-          <a href="#"
-             @click.prevent="setActive('Optimization')"
-             class="block py-2 px-3 rounded-lg mb-1 flex items-center nav-item"
-             :class="activeMenu === 'Optimization' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-            <i class="fas fa-magic mr-3"></i> Request Optimasi
+             :class="activeMenu === 'Commission' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
+            <i class="fas fa-percentage mr-3"></i> Terima Komisi
+            <span class="badge bg-yellow-500 rounded-full ml-auto" x-text="stats.pendingCommissions"></span>
           </a>
         </div>
       </nav>
 
       <div class="pt-4 border-t border-blue-700/60">
         <a href="#"
-           @click.prevent="setActive('Profile')"
+           @click.prevent="setActive('Logout')"
            class="block py-2 px-3 rounded-lg flex items-center nav-item"
-           :class="activeMenu === 'Profile' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
-          <i class="fas fa-user-cog mr-3"></i> Profil Saya
+           :class="activeMenu === 'Logout' ? 'active' : 'hover:bg-blue-700/70 focus:ring-2 focus:ring-blue-300/40'">
+          <i class="fas fa-sign-out-alt mr-3"></i> Logout
         </a>
       </div>
     </div>
@@ -163,42 +166,37 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden" :class="{ 'md:ml-64': sidebarOpen }">
       <!-- Top Navigation -->
-      <header class="bg-white shadow z-20 fixed top-0 left-0 right-0" :class="sidebarOpen ? 'md:ml-64' : ''">
+      <header class="shadow z-20 fixed top-0 left-0 right-0 app-topbar" :class="sidebarOpen ? 'md:ml-64' : ''">
         <div class="flex items-center justify-between p-4">
           <!-- Tombol hamburger yang selalu terlihat -->
           <button @click="sidebarOpen = !sidebarOpen" class="hamburger-btn">
-            <i class="fas fa-bars text-gray-700"></i>
+            <i class="fas fa-bars"></i>
           </button>
 
           <div class="relative w-full max-w-md mx-4">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+              <i class="fas fa-search"></i>
             </div>
             <input
               type="text"
               x-model="searchKeyword"
               @keyup.enter="searchKeywordHandler"
-              class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500
-                     focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Cari produk, leads...">
+              class="block w-full pl-10 pr-3 py-2 border rounded-md leading-5 placeholder-gray-200
+                     focus:outline-none focus:ring-2 focus:ring-white/70 focus:border-white/70 sm:text-sm"
+              placeholder="Cari keyword, vendor, atau leads...">
           </div>
 
           <div class="flex items-center space-x-4">
-            <button @click="openModal('notifications')" class="relative text-gray-600 hover:text-gray-900">
+            <button @click="openModal('notifications')" class="relative hover:opacity-90">
               <i class="fas fa-bell text-xl"></i>
               <span x-show="stats.unreadNotifications > 0" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs" x-text="stats.unreadNotifications"></span>
             </button>
             
-            <div class="relative ml-3">
-              <button @click="profileDropdownOpen = !profileDropdownOpen" class="flex text-sm rounded-full focus:outline-none">
-                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Vendor profile">
-              </button>
-              <div x-show="profileDropdownOpen" @click.away="profileDropdownOpen = false"
-                   class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black/5">
-                <a href="#" @click.prevent="setActive('Profile')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
-                <a href="#" @click.prevent="logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-              </div>
+            <!-- Avatar bisa diklik (menu dropdown dihapus; klik foto buka halaman profil) -->
+            <div class="relative ml-3 flex items-center">
+              <a href="#" @click.prevent="setActive('Profile')" class="flex text-sm rounded-full focus:outline-none" aria-label="Buka profil">
+                <img class="h-8 w-8 rounded-full" :src="profilePhotoUrl" alt="SEO Team profile">
+              </a>
             </div>
           </div>
         </div>
@@ -209,6 +207,7 @@
 
       <!-- Main Content Area -->
       <main class="flex-1 overflow-y-auto p-4 bg-gray-50">
+        <!-- Dashboard -->
         <template x-if="activeMenu === 'Dashboard'">
           <div>
             <!-- Stats Cards -->
@@ -216,11 +215,11 @@
               <div class="bg-white p-4 rounded-lg shadow">
                 <div class="flex items-center">
                   <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-                    <i class="fas fa-bullseye text-lg"></i>
+                    <i class="fas fa-bolt text-lg"></i>
                   </div>
                   <div>
                     <p class="text-sm font-medium text-gray-500">Leads Baru</p>
-                    <p class="text-2xl font-semibold" x-text="stats.newLeads">5</p>
+                    <p class="text-2xl font-semibold" x-text="stats.newLeads">24</p>
                   </div>
                 </div>
               </div>
@@ -231,8 +230,8 @@
                     <i class="fas fa-check-circle text-lg"></i>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Leads Diproses</p>
-                    <p class="text-2xl font-semibold" x-text="stats.processedLeads">24</p>
+                    <p class="text-sm font-medium text-gray-500">Leads Terdistribusi</p>
+                    <p class="text-2xl font-semibold" x-text="stats.distributedLeads">156</p>
                   </div>
                 </div>
               </div>
@@ -240,11 +239,11 @@
               <div class="bg-white p-4 rounded-lg shadow">
                 <div class="flex items-center">
                   <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
-                    <i class="fas fa-money-bill-wave text-lg"></i>
+                    <i class="fas fa-chart-line text-lg"></i>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Komisi Bulan Ini</p>
-                    <p class="text-2xl font-semibold" x-text="'Rp ' + stats.currentMonthCommission.toLocaleString('id-ID')">1,250,000</p>
+                    <p class="text-sm font-medium text-gray-500">Keyword Ranking Naik</p>
+                    <p class="text-2xl font-semibold" x-text="stats.rankingUp">38</p>
                   </div>
                 </div>
               </div>
@@ -252,140 +251,172 @@
               <div class="bg-white p-4 rounded-lg shadow">
                 <div class="flex items-center">
                   <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
-                    <i class="fas fa-chart-line text-lg"></i>
+                    <i class="fas fa-money-bill-wave text-lg"></i>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Keyword Page 1</p>
-                    <p class="text-2xl font-semibold" x-text="stats.keywordsPage1">8</p>
+                    <p class="text-sm font-medium text-gray-500">Komisi Belum Diterima</p>
+                    <p class="text-2xl font-semibold" x-text="stats.pendingCommissions">12</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Recent Leads Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <!-- Leads Terbaru -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <!-- Leads Baru -->
               <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 flex items-center justify-between">
-                    <span><i class="fas fa-bullseye mr-2 text-blue-600"></i> Leads Terbaru</span>
-                    <a href="#" @click.prevent="setActive('Leads')" class="text-sm text-blue-600 hover:text-blue-800">Lihat Semua</a>
+                    <span><i class="fas fa-bolt mr-2 text-blue-600"></i> Leads Baru</span>
+                    <button @click="openModal('assignLeads')" class="text-sm text-blue-600 hover:text-blue-800">Assign Semua</button>
                   </h3>
                 </div>
                 <div class="divide-y divide-gray-200">
-                  <template x-for="lead in recentLeads" :key="lead.id">
+                  <template x-for="lead in newLeads" :key="lead.id">
                     <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
                       <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                           <p class="text-sm font-medium text-gray-900 truncate" x-text="lead.project"></p>
                           <p class="text-sm text-gray-500 truncate" x-text="'Dari: ' + lead.customer"></p>
                         </div>
-                        <div class="ml-4 flex-shrink-0">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                :class="{
-                                  'bg-yellow-100 text-yellow-800': lead.status === 'new',
-                                  'bg-blue-100 text-blue-800': lead.status === 'processed',
-                                  'bg-green-100 text-green-800': lead.status === 'converted'
-                                }"
-                                x-text="{
-                                  new: 'Baru',
-                                  processed: 'Diproses',
-                                  converted: 'Converted'
-                                }[lead.status]"></span>
+                        <div class="ml-4 flex-shrink-0 flex space-x-2">
+                          <button @click="assignLead(lead.id)" class="text-green-600 hover:text-green-800" title="Assign Lead">
+                            <i class="fas fa-user-plus"></i>
+                          </button>
+                          <!-- Ikon mata dihapus; tombol tetap agar fungsi tidak hilang -->
+                          <button @click="viewLeadDetail(lead.id)" class="text-blue-600 hover:text-blue-800 text-sm" title="Detail">
+                            Detail
+                          </button>
                         </div>
                       </div>
                       <div class="mt-2">
                         <div class="flex justify-between text-sm text-gray-500">
-                          <span x-text="'Tanggal: ' + lead.date"></span>
-                          <button @click="openModal('leadDetail', lead.id)" class="text-blue-600 hover:text-blue-800">Detail</button>
+                          <span x-text="'Keyword: ' + lead.keyword"></span>
+                          <span x-text="lead.date"></span>
                         </div>
                       </div>
                     </div>
                   </template>
                 </div>
+                <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50">
+                  <a href="#" @click.prevent="setActive('LeadDistribution')" class="text-sm font-medium text-blue-600 hover:text-blue-500">Lihat semua leads</a>
+                </div>
               </div>
 
-              <!-- Quick Actions -->
+              <!-- Pesan Terbaru -->
               <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Aksi Cepat
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 flex items-center">
+                    <i class="fas fa-comments mr-2 text-purple-600"></i> Pesan Terbaru
                   </h3>
                 </div>
-                <div class="px-4 py-5 sm:p-6">
-                  <div class="grid grid-cols-1 gap-4">
-                    <button @click="openModal('addProduct')" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                      <i class="fas fa-plus mr-2"></i> Tambah Produk
-                    </button>
-                    <button @click="openModal('contactImersa')" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
-                      <i class="fas fa-headset mr-2"></i> Hubungi Imersa
-                    </button>
-                    <button @click="openModal('requestOptimization')" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-                      <i class="fas fa-magic mr-2"></i> Request Optimasi
-                    </button>
-                  </div>
+                <div class="divide-y divide-gray-200">
+                  <template x-for="message in recentMessages" :key="message.id">
+                    <div class="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer" @click="openChat(message.vendorId)">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                          <i class="fas fa-store text-purple-600"></i>
+                        </div>
+                        <div class="ml-4">
+                          <div class="flex justify-between">
+                            <p class="text-sm font-medium text-gray-900" x-text="message.vendor"></p>
+                            <span class="text-xs text-gray-500" x-text="message.time"></span>
+                          </div>
+                          <p class="text-sm text-gray-500 truncate" x-text="message.text"></p>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50">
+                  <a href="#" @click.prevent="setActive('VendorChat')" class="text-sm font-medium text-blue-600 hover:text-blue-500">Lihat semua percakapan</a>
+                </div>
+              </div>
+
+              <!-- Keyword Perlu Optimasi -->
+              <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2 text-yellow-600"></i> Keyword Perlu Optimasi
+                  </h3>
+                </div>
+                <div class="divide-y divide-gray-200">
+                  <template x-for="keyword in needOptimization" :key="keyword.id">
+                    <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                      <div class="flex items-center justify-between">
+                        <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-900 truncate" x-text="keyword.keyword"></p>
+                          <p class="text-sm text-gray-500 truncate" x-text="'Posisi: ' + keyword.position"></p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0">
+                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                                :class="keyword.trend === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                x-text="keyword.trend === 'up' ? 'Naik' : 'Turun'"></span>
+                        </div>
+                      </div>
+                      <div class="mt-2">
+                        <div class="flex justify-between text-sm text-gray-500">
+                          <span x-text="'Proyek: ' + keyword.project"></span>
+                          <button @click="openKeywordDetail(keyword.id)" class="text-blue-600 hover:text-blue-800">Optimasi</button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50">
+                  <a href="#" @click.prevent="setActive('KeywordAnalysis')" class="text-sm font-medium text-blue-600 hover:text-blue-500">Analisis lebih lanjut</a>
                 </div>
               </div>
             </div>
 
-            <!-- Keyword Performance -->
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <!-- Komisi Menunggu Diterima -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
               <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 flex items-center justify-between">
-                  <span><i class="fas fa-chart-line mr-2 text-blue-600"></i> Performa Keyword</span>
-                  <a href="#" @click.prevent="setActive('SEOReports')" class="text-sm text-blue-600 hover:text-blue-800">Lihat Detail</a>
+                  <span><i class="fas fa-money-bill-wave mr-2 text-green-600"></i> Komisi Menunggu Diterima</span>
+                  <button @click="openModal('verifyAll')" class="text-sm text-green-600 hover:text-green-800">Terima Semua</button>
                 </h3>
               </div>
-              <div class="px-4 py-5 sm:p-6">
-                <div class="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0">
-                  <!-- Keyword Position Chart -->
-                  <div class="flex-1">
-                    <div class="h-64 bg-gray-50 rounded-md flex items-center justify-center">
-                      <!-- Placeholder untuk chart -->
-                      <p class="text-gray-500">Grafik posisi keyword akan ditampilkan di sini</p>
-                    </div>
-                  </div>
-                  
-                  <!-- Top Keywords -->
-                  <div class="w-full md:w-1/3">
-                    <h4 class="text-sm font-medium text-gray-500 mb-2">TOP KEYWORDS</h4>
-                    <div class="space-y-3">
-                      <template x-for="keyword in topKeywords" :key="keyword.id">
-                        <div class="flex items-start">
-                          <span class="flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium"
-                                :class="{
-                                  'bg-green-100 text-green-800': keyword.position <= 5,
-                                  'bg-yellow-100 text-yellow-800': keyword.position > 5 && keyword.position <= 10,
-                                  'bg-red-100 text-red-800': keyword.position > 10
-                                }"
-                                x-text="keyword.position"></span>
-                          <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-900" x-text="keyword.text"></p>
-                            <div class="flex items-center text-xs text-gray-500">
-                              <span x-text="keyword.project"></span>
-                              <span class="mx-1">•</span>
-                              <span :class="keyword.trend === 'up' ? 'text-green-600' : 'text-red-600'">
-                                <i class="fas" :class="keyword.trend === 'up' ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
-                                <span x-text="keyword.change"></span>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyek</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Leads</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Komisi</th>
+                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <template x-for="commission in pendingCommissions" :key="commission.id">
+                      <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="commission.vendor"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="commission.project"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="commission.leads"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="'Rp ' + commission.amount.toLocaleString('id-ID')"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button @click="verifyCommission(commission.id)" class="text-green-600 hover:text-green-900 mr-3">Terima</button>
+                          <button @click="openModal('commissionDetail', commission.id)" class="text-blue-600 hover:text-blue-900">Detail</button>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+              <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50">
+                <a href="#" @click.prevent="setActive('Commission')" class="text-sm font-medium text-blue-600 hover:text-blue-500">Lihat semua komisi</a>
               </div>
             </div>
           </div>
         </template>
 
-        <!-- Leads View -->
-        <template x-if="activeMenu === 'Leads'">
+        <!-- Lead Distribution View -->
+        <template x-if="activeMenu === 'LeadDistribution'">
           <div>
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-bullseye mr-2 text-blue-600"></i> Leads Saya
+                <i class="fas fa-share-alt mr-2 text-blue-600"></i> Distribusi Leads
               </h2>
               <div class="flex space-x-2">
                 <button @click="openModal('filterLeads')" class="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
@@ -405,15 +436,16 @@
                       Daftar Leads
                     </h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Total <span x-text="leads.length"></span> leads
+                      Total <span x-text="leads.length"></span> leads ditemukan
                     </p>
                   </div>
                   <div class="relative">
                     <select x-model="leadFilter" @change="filterLeads" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
                       <option value="all">Semua Status</option>
                       <option value="new">Baru</option>
-                      <option value="processed">Diproses</option>
+                      <option value="assigned">Terdistribusi</option>
                       <option value="converted">Converted</option>
+                      <option value="unresponsive">Tidak Responsif</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                       <i class="fas fa-chevron-down text-xs"></i>
@@ -428,8 +460,9 @@
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Lead</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyek/Keyword</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                       <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                   </thead>
@@ -439,24 +472,31 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="'#' + lead.id"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="lead.customer"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="lead.project"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="lead.date"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="lead.vendor || '-'"></td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                                 :class="{
+                                  'bg-green-100 text-green-800': lead.status === 'converted',
+                                  'bg-blue-100 text-blue-800': lead.status === 'assigned',
                                   'bg-yellow-100 text-yellow-800': lead.status === 'new',
-                                  'bg-blue-100 text-blue-800': lead.status === 'processed',
-                                  'bg-green-100 text-green-800': lead.status === 'converted'
+                                  'bg-red-100 text-red-800': lead.status === 'unresponsive'
                                 }"
                                 x-text="{
+                                  converted: 'Converted',
+                                  assigned: 'Terdistribusi',
                                   new: 'Baru',
-                                  processed: 'Diproses',
-                                  converted: 'Converted'
+                                  unresponsive: 'Tidak Responsif'
                                 }[lead.status]"></span>
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="lead.date"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button @click="updateLeadStatus(lead.id, 'processed')" x-show="lead.status === 'new'" class="text-blue-600 hover:text-blue-900 mr-3">Proses</button>
-                          <button @click="updateLeadStatus(lead.id, 'converted')" x-show="lead.status !== 'converted'" class="text-green-600 hover:text-green-900 mr-3">Convert</button>
-                          <button @click="openModal('leadDetail', lead.id)" class="text-gray-600 hover:text-gray-900">Detail</button>
+                          <template x-if="lead.status === 'new'">
+                            <button @click="openModal('assignLead', lead.id)" class="text-green-600 hover:text-green-900 mr-3">Assign</button>
+                          </template>
+                          <template x-if="lead.status === 'unresponsive'">
+                            <button @click="openModal('reassignLead', lead.id)" class="text-blue-600 hover:text-blue-900 mr-3">Reassign</button>
+                          </template>
+                          <button @click="openModal('leadDetail', lead.id)" class="text-blue-600 hover:text-blue-900">Detail</button>
                         </td>
                       </tr>
                     </template>
@@ -482,15 +522,15 @@
           </div>
         </template>
 
-        <!-- Products View -->
-        <template x-if="activeMenu === 'Products'">
+        <!-- SEO Reports View -->
+        <template x-if="activeMenu === 'SEOReports'">
           <div>
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-boxes mr-2 text-blue-600"></i> Produk/Layanan
+                <i class="fas fa-chart-line mr-2 text-blue-600"></i> Laporan SEO
               </h2>
-              <button @click="openModal('addProduct')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                <i class="fas fa-plus mr-2"></i> Tambah Produk
+              <button @click="openModal('addReport')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Tambah Laporan
               </button>
             </div>
 
@@ -499,17 +539,18 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div class="mb-4 sm:mb-0">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
-                      Daftar Produk/Layanan
+                      Riwayat Laporan
                     </h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Total <span x-text="products.length"></span> produk
+                      Total <span x-text="seoReports.length"></span> laporan
                     </p>
                   </div>
                   <div class="relative">
-                    <select x-model="productFilter" @change="filterProducts" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
-                      <option value="all">Semua Kategori</option>
-                      <option value="product">Produk Fisik</option>
-                      <option value="service">Layanan</option>
+                    <select x-model="reportFilter" @change="filterReports" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                      <option value="all">Semua Proyek</option>
+                      <option value="project1">Label Baju Stratlaya</option>
+                      <option value="project2">Cetak Yasin Bangkalan</option>
+                      <option value="project3">Kursus Bahasa Inggris</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                       <i class="fas fa-chevron-down text-xs"></i>
@@ -521,35 +562,30 @@
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Produk</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persentase Komisi</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leads</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyek</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keyword</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perubahan</th>
                       <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    <template x-for="product in filteredProducts" :key="product.id">
+                    <template x-for="report in filteredReports" :key="report.id">
                       <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="report.date"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="report.project"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="report.keyword"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="report.position"></td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <i class="fas" :class="product.type === 'product' ? 'fa-box text-blue-600' : 'fa-handshake text-purple-600'"></i>
-                            </div>
-                            <div class="ml-4">
-                              <p class="text-sm font-medium text-gray-900" x-text="product.name"></p>
-                              <p class="text-sm text-gray-500 truncate max-w-xs" x-text="product.description"></p>
-                            </div>
-                          </div>
+                          <span class="flex items-center" :class="report.trend === 'up' ? 'text-green-600' : 'text-red-600'">
+                            <i class="fas" :class="report.trend === 'up' ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
+                            <span x-text="report.change" class="ml-1"></span>
+                          </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="product.category"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="'Rp ' + product.price.toLocaleString('id-ID')"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="product.commission + '%'"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="product.leads"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button @click="openModal('editProduct', product.id)" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                          <button @click="deleteProduct(product.id)" class="text-red-600 hover:text-red-900">Hapus</button>
+                          <button @click="openModal('editReport', report.id)" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                          <button @click="deleteReport(report.id)" class="text-red-600 hover:text-red-900">Hapus</button>
                         </td>
                       </tr>
                     </template>
@@ -558,7 +594,7 @@
               </div>
               <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
                 <div class="text-sm text-gray-500">
-                  Menampilkan <span x-text="filteredProducts.length"></span> dari <span x-text="products.length"></span> produk
+                  Menampilkan <span x-text="filteredReports.length"></span> dari <span x-text="seoReports.length"></span> laporan
                 </div>
                 <div class="flex space-x-2">
                   <button class="inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
@@ -575,24 +611,112 @@
           </div>
         </template>
 
-        <!-- SEO Reports View -->
-        <template x-if="activeMenu === 'SEOReports'">
+        <!-- Keyword Analysis View -->
+        <template x-if="activeMenu === 'KeywordAnalysis'">
           <div>
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-chart-line mr-2 text-blue-600"></i> Ranking Keyword
+                <i class="fas fa-key mr-2 text-blue-600"></i> Analisis Keyword
               </h2>
-              <div class="flex space-x-2">
-                <button @click="openModal('filterKeywords')" class="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                  <i class="fas fa-filter mr-2"></i> Filter
-                </button>
-                <button @click="openModal('exportKeywords')" class="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                  <i class="fas fa-file-export mr-2"></i> Export
-                </button>
+              <button @click="openModal('addKeyword')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Tambah Keyword
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <!-- Keyword Performance -->
+              <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Performa Keyword
+                  </h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="text-sm font-medium text-gray-500">Total Keyword</div>
+                    <div class="text-2xl font-semibold" x-text="stats.totalKeywords">128</div>
+                  </div>
+                  <div class="space-y-4">
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-500">Page 1 (1-10)</span>
+                        <span class="text-sm font-semibold" x-text="stats.keywordsPage1"></span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-green-600 h-2.5 rounded-full" :style="'width: ' + (stats.keywordsPage1 / stats.totalKeywords * 100) + '%'"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-500">Page 2 (11-20)</span>
+                        <span class="text-sm font-semibold" x-text="stats.keywordsPage2"></span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-yellow-500 h-2.5 rounded-full" :style="'width: ' + (stats.keywordsPage2 / stats.totalKeywords * 100) + '%'"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-500">Page 3+ (>20)</span>
+                        <span class="text-sm font-semibold" x-text="stats.keywordsPage3"></span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-red-600 h-2.5 rounded-full" :style="'width: ' + (stats.keywordsPage3 / stats.totalKeywords * 100) + '%'"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Keyword Trends -->
+              <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Trend Keyword
+                  </h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                  <div class="flex items-center justify-center h-48 bg-gray-50 rounded-md mb-4">
+                    <p class="text-gray-500">Grafik trend keyword akan ditampilkan di sini</p>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                      <div class="text-2xl font-semibold text-green-600" x-text="stats.keywordsUp"></div>
+                      <div class="text-sm text-gray-500">Keyword Naik</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-2xl font-semibold text-red-600" x-text="stats.keywordsDown"></div>
+                      <div class="text-sm text-gray-500">Keyword Turun</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Aksi Cepat
+                  </h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                  <div class="grid grid-cols-1 gap-4">
+                    <button @click="openModal('optimizeKeywords')" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
+                      <i class="fas fa-magic mr-2"></i> Optimasi Keyword
+                    </button>
+                    <button @click="openModal('exportKeywords')" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                      <i class="fas fa-file-export mr-2"></i> Export Data
+                    </button>
+                    <button @click="openModal('requestContent')" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+                      <i class="fas fa-edit mr-2"></i> Request Konten
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+            <!-- Keyword List -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
               <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div class="mb-4 sm:mb-0">
@@ -605,10 +729,12 @@
                   </div>
                   <div class="relative">
                     <select x-model="keywordFilter" @change="filterKeywords" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
-                      <option value="all">Semua Posisi</option>
-                      <option value="page1">Page 1 (1-10)</option>
-                      <option value="page2">Page 2 (11-20)</option>
-                      <option value="page3">Page 3+ (>20)</option>
+                      <option value="all">Semua Status</option>
+                      <option value="page1">Page 1</option>
+                      <option value="page2">Page 2</option>
+                      <option value="page3">Page 3+</option>
+                      <option value="up">Trend Naik</option>
+                      <option value="down">Trend Turun</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                       <i class="fas fa-chevron-down text-xs"></i>
@@ -642,7 +768,8 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="keyword.volume"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button @click="openModal('keywordDetail', keyword.id)" class="text-blue-600 hover:text-blue-900">Detail</button>
+                          <button @click="openModal('keywordDetail', keyword.id)" class="text-blue-600 hover:text-blue-900 mr-3">Detail</button>
+                          <button @click="openModal('optimizeKeyword', keyword.id)" class="text-green-600 hover:text-green-900">Optimasi</button>
                         </td>
                       </tr>
                     </template>
@@ -668,12 +795,198 @@
           </div>
         </template>
 
-        <!-- Commissions View -->
-        <template x-if="activeMenu === 'Commissions'">
+        <!-- Vendor Chat View -->
+        <template x-if="activeMenu === 'VendorChat'">
+          <div class="h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-comments mr-2 text-blue-600"></i> Chat Vendor
+              </h2>
+              <button @click="openModal('newChat')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Chat Baru
+              </button>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden bg-white rounded-lg shadow">
+              <!-- Daftar Chat -->
+              <div class="w-1/3 border-r border-gray-200 flex flex-col">
+                <div class="p-4 border-b border-gray-200">
+                  <input type="text" placeholder="Cari vendor..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex-1 overflow-y-auto">
+                  <template x-for="chat in vendorChats" :key="chat.id">
+                    <div @click="selectChat(chat.id)" class="p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer" :class="{ 'bg-blue-50': activeChat === chat.id }">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <i class="fas fa-store text-blue-600"></i>
+                        </div>
+                        <div class="ml-3">
+                          <div class="flex justify-between">
+                            <p class="text-sm font-medium text-gray-900" x-text="chat.vendor"></p>
+                            <span class="text-xs text-gray-500" x-text="chat.time"></span>
+                          </div>
+                          <p class="text-sm text-gray-500 truncate" x-text="chat.lastMessage"></p>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <!-- Area Chat -->
+              <div class="flex-1 flex flex-col" x-show="activeChat">
+                <div class="p-4 border-b border-gray-200 flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-store text-blue-600"></i>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900" x-text="getActiveChat().vendor"></p>
+                    <p class="text-xs text-gray-500" x-text="getActiveChat().status"></p>
+                  </div>
+                  <div class="ml-auto flex space-x-2">
+                    <button class="text-gray-500 hover:text-gray-700">
+                      <i class="fas fa-phone-alt"></i>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700">
+                      <i class="fas fa-info-circle"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="flex-1 p-4 overflow-y-auto bg-gray-50">
+                  <template x-for="message in getActiveChat().messages" :key="message.id">
+                    <div class="mb-4" :class="{ 'text-right': message.sender === 'me' }">
+                      <div class="inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg" 
+                           :class="message.sender === 'me' ? 'bg-blue-600 text-white' : 'bg-white text-gray-800 border border-gray-200'">
+                        <p x-text="message.text"></p>
+                        <p class="text-xs mt-1" :class="message.sender === 'me' ? 'text-blue-200' : 'text-gray-500'" x-text="message.time"></p>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+
+                <div class="p-4 border-t border-gray-200">
+                  <div class="flex items-center">
+                    <input type="text" placeholder="Ketik pesan..." class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700">
+                      <i class="fas fa-paper-plane"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Placeholder ketika belum ada chat yang dipilih -->
+              <div x-show="!activeChat" class="flex-1 flex items-center justify-center bg-gray-50">
+                <div class="text-center">
+                  <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
+                  <p class="text-gray-500">Pilih percakapan untuk memulai chat</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Feedback View -->
+        <template x-if="activeMenu === 'Feedback'">
           <div>
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i> Pembayaran Komisi
+                <i class="fas fa-comment-dots mr-2 text-blue-600"></i> Feedback Optimasi
+              </h2>
+              <button @click="openModal('newFeedback')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Feedback Baru
+              </button>
+            </div>
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+              <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div class="mb-4 sm:mb-0">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                      Daftar Feedback
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Total <span x-text="feedbacks.length"></span> feedback
+                    </p>
+                  </div>
+                  <div class="relative">
+                    <select x-model="feedbackFilter" @change="filterFeedbacks" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                      <option value="all">Semua Status</option>
+                      <option value="pending">Menunggu</option>
+                      <option value="processed">Diproses</option>
+                      <option value="completed">Selesai</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyek</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <template x-for="feedback in filteredFeedbacks" :key="feedback.id">
+                      <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="feedback.date"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="feedback.vendor"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="feedback.project"></td>
+                        <td class="px-6 py-4 text-sm text-gray-500" x-text="feedback.text.substring(0, 50) + '...'"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="{
+                                  'bg-yellow-100 text-yellow-800': feedback.status === 'pending',
+                                  'bg-blue-100 text-blue-800': feedback.status === 'processed',
+                                  'bg-green-100 text-green-800': feedback.status === 'completed'
+                                }"
+                                x-text="{
+                                  pending: 'Menunggu',
+                                  processed: 'Diproses',
+                                  completed: 'Selesai'
+                                }[feedback.status]"></span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button @click="openModal('feedbackDetail', feedback.id)" class="text-blue-600 hover:text-blue-900">Detail</button>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+              <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+                <div class="text-sm text-gray-500">
+                  Menampilkan <span x-text="filteredFeedbacks.length"></span> dari <span x-text="feedbacks.length"></span> feedback
+                </div>
+                <div class="flex space-x-2">
+                  <button class="inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <button class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+                  <button class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
+                  <button class="inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Terima Komisi View -->
+        <template x-if="activeMenu === 'Commission'">
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i> Terima Komisi
               </h2>
               <div class="flex space-x-2">
                 <button @click="openModal('filterCommissions')" class="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
@@ -690,17 +1003,18 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div class="mb-4 sm:mb-0">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
-                      Daftar Pembayaran Komisi
+                      Daftar Komisi
                     </h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Total <span x-text="commissions.length"></span> pembayaran
+                      Total <span x-text="commissions.length"></span> komisi
                     </p>
                   </div>
                   <div class="relative">
                     <select x-model="commissionFilter" @change="filterCommissions" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
                       <option value="all">Semua Status</option>
-                      <option value="unpaid">Belum Dibayar</option>
-                      <option value="paid">Sudah Dibayar</option>
+                      <option value="pending">Belum Diterima</option>
+                      <option value="verified">Terverima</option>
+                      <option value="rejected">Ditolak</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                       <i class="fas fa-chevron-down text-xs"></i>
@@ -712,7 +1026,8 @@
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pembayaran</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Komisi</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Leads</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Komisi</th>
@@ -724,21 +1039,27 @@
                     <template x-for="commission in filteredCommissions" :key="commission.id">
                       <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="'#' + commission.id"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="commission.vendor"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="commission.period"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="commission.leads"></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="'Rp ' + commission.amount.toLocaleString('id-ID')"></td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                                 :class="{
-                                  'bg-yellow-100 text-yellow-800': commission.status === 'unpaid',
-                                  'bg-green-100 text-green-800': commission.status === 'paid'
+                                  'bg-yellow-100 text-yellow-800': commission.status === 'pending',
+                                  'bg-green-100 text-green-800': commission.status === 'verified',
+                                  'bg-red-100 text-red-800': commission.status === 'rejected'
                                 }"
                                 x-text="{
-                                  unpaid: 'Belum Dibayar',
-                                  paid: 'Sudah Dibayar'
+                                  pending: 'Belum Diterima',
+                                  verified: 'Terverima',
+                                  rejected: 'Ditolak'
                                 }[commission.status]"></span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <template x-if="commission.status === 'pending'">
+                            <button @click="verifyCommission(commission.id)" class="text-green-600 hover:text-green-900 mr-3">Terima</button>
+                          </template>
                           <button @click="openModal('commissionDetail', commission.id)" class="text-blue-600 hover:text-blue-900">Detail</button>
                         </td>
                       </tr>
@@ -748,7 +1069,7 @@
               </div>
               <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
                 <div class="text-sm text-gray-500">
-                  Menampilkan <span x-text="filteredCommissions.length"></span> dari <span x-text="commissions.length"></span> pembayaran
+                  Menampilkan <span x-text="filteredCommissions.length"></span> dari <span x-text="commissions.length"></span> komisi
                 </div>
                 <div class="flex space-x-2">
                   <button class="inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
@@ -765,301 +1086,91 @@
           </div>
         </template>
 
-        <!-- Messages View -->
-        <template x-if="activeMenu === 'Messages'">
-          <div>
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-comments mr-2 text-blue-600"></i> Pesan
-              </h2>
-              <button @click="openModal('newMessage')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                <i class="fas fa-plus mr-2"></i> Pesan Baru
-              </button>
-            </div>
-
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
-              <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <div class="mb-4 sm:mb-0">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
-                      Kotak Pesan
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                      Total <span x-text="messages.length"></span> pesan
-                    </p>
-                  </div>
-                  <div class="relative">
-                    <select x-model="messageFilter" @change="filterMessages" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
-                      <option value="all">Semua Pesan</option>
-                      <option value="unread">Belum Dibaca</option>
-                      <option value="read">Sudah Dibaca</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <i class="fas fa-chevron-down text-xs"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="divide-y divide-gray-200">
-                <template x-for="message in filteredMessages" :key="message.id">
-                  <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <i class="fas fa-envelope text-blue-600"></i>
-                        </div>
-                        <div class="ml-4">
-                          <p class="text-sm font-medium text-gray-900" x-text="message.subject"></p>
-                          <p class="text-sm text-gray-500 truncate max-w-xs" x-text="message.preview"></p>
-                        </div>
-                      </div>
-                      <div class="ml-4 flex-shrink-0 flex">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                              :class="{
-                                'bg-blue-100 text-blue-800': !message.read,
-                                'bg-gray-100 text-gray-800': message.read
-                              }"
-                              x-text="message.read ? 'Dibaca' : 'Baru'"></span>
-                      </div>
-                    </div>
-                    <div class="mt-2">
-                      <div class="flex justify-between text-sm text-gray-500">
-                        <span x-text="'Dari: ' + message.sender"></span>
-                        <span x-text="message.date"></span>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </div>
-              <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-                <div class="text-sm text-gray-500">
-                  Menampilkan <span x-text="filteredMessages.length"></span> dari <span x-text="messages.length"></span> pesan
-                </div>
-                <div class="flex space-x-2">
-                  <button class="inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <i class="fas fa-chevron-left"></i>
-                  </button>
-                  <button class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
-                  <button class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
-                  <button class="inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <i class="fas fa-chevron-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <!-- Optimization View -->
-        <template x-if="activeMenu === 'Optimization'">
-          <div>
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-magic mr-2 text-blue-600"></i> Request Optimasi
-              </h2>
-              <button @click="openModal('requestOptimization')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-                <i class="fas fa-plus mr-2"></i> Request Baru
-              </button>
-            </div>
-
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
-              <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <div class="mb-4 sm:mb-0">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
-                      Daftar Request Optimasi
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                      Total <span x-text="optimizationRequests.length"></span> request
-                    </p>
-                  </div>
-                  <div class="relative">
-                    <select x-model="optimizationFilter" @change="filterOptimizations" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
-                      <option value="all">Semua Status</option>
-                      <option value="pending">Pending</option>
-                      <option value="in_progress">Dalam Proses</option>
-                      <option value="completed">Selesai</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <i class="fas fa-chevron-down text-xs"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-gray-50">
-                    <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Request</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyek</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keyword</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <template x-for="request in filteredOptimizations" :key="request.id">
-                      <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="'#' + request.id"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="request.project"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="request.keyword"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="request.date"></td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                :class="{
-                                  'bg-yellow-100 text-yellow-800': request.status === 'pending',
-                                  'bg-blue-100 text-blue-800': request.status === 'in_progress',
-                                  'bg-green-100 text-green-800': request.status === 'completed'
-                                }"
-                                x-text="{
-                                  pending: 'Pending',
-                                  in_progress: 'Dalam Proses',
-                                  completed: 'Selesai'
-                                }[request.status]"></span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button @click="openModal('optimizationDetail', request.id)" class="text-blue-600 hover:text-blue-900">Detail</button>
-                        </td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
-              </div>
-              <div class="px-4 py-4 sm:px-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-                <div class="text-sm text-gray-500">
-                  Menampilkan <span x-text="filteredOptimizations.length"></span> dari <span x-text="optimizationRequests.length"></span> request
-                </div>
-                <div class="flex space-x-2">
-                  <button class="inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <i class="fas fa-chevron-left"></i>
-                  </button>
-                  <button class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
-                  <button class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
-                  <button class="inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <i class="fas fa-chevron-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <!-- Profile View -->
+        <!-- ======================= Profil Saya (full image + 2 tombol) ======================= -->
         <template x-if="activeMenu === 'Profile'">
-          <div>
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-user-cog mr-2 text-blue-600"></i> Profil Saya
+          <div class="max-w-5xl mx-auto">
+            <div class="bg-white rounded-lg shadow p-6">
+              <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-user-circle mr-2 text-blue-600"></i> Profil Saya
               </h2>
-              <button @click="openModal('editProfile')" class="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                <i class="fas fa-edit mr-2"></i> Edit Profil
-              </button>
-            </div>
 
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
-              <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                  Informasi Vendor
-                </h3>
-                <p class="mt-1 text-sm text-gray-500">
-                  Profil Anda telah diverifikasi oleh tim Imersa
-                </p>
-              </div>
-              <div class="px-4 py-5 sm:p-6">
-                <div class="flex flex-col md:flex-row gap-8">
-                  <div class="w-full md:w-1/3">
-                    <div class="flex flex-col items-center">
-                      <img class="h-32 w-32 rounded-full mb-4" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Vendor profile">
-                      <h3 class="text-lg font-medium text-gray-900" x-text="vendorProfile.name"></h3>
-                      <p class="text-sm text-gray-500" x-text="vendorProfile.businessType"></p>
-                      <div class="mt-4 flex space-x-4">
-                        <button class="text-blue-600 hover:text-blue-800">
-                          <i class="fas fa-camera"></i>
-                        </button>
-                        <button class="text-blue-600 hover:text-blue-800">
-                          <i class="fas fa-upload"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="w-full md:w-2/3">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">Nama Bisnis</label>
-                        <p class="mt-1 text-sm text-gray-900" x-text="vendorProfile.name"></p>
-                      </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">Jenis Bisnis</label>
-                        <p class="mt-1 text-sm text-gray-900" x-text="vendorProfile.businessType"></p>
-                      </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <p class="mt-1 text-sm text-gray-900" x-text="vendorProfile.email"></p>
-                      </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
-                        <p class="mt-1 text-sm text-gray-900" x-text="vendorProfile.whatsapp"></p>
-                      </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">Alamat</label>
-                        <p class="mt-1 text-sm text-gray-900" x-text="vendorProfile.address"></p>
-                      </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">Bergabung Sejak</label>
-                        <p class="mt-1 text-sm text-gray-900" x-text="vendorProfile.joinDate"></p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <!-- Gambar ukuran penuh (dibungkus href ke URL aslinya) -->
+              <a :href="profilePhotoUrl" target="_blank" rel="noopener" class="block">
+                <img :src="profilePhotoUrl" alt="Foto Profil" class="w-full max-h-[70vh] object-contain rounded-md border">
+              </a>
+
+              <div class="mt-6 flex items-center space-x-3">
+                <button @click="setActive('Settings')" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                  change photo profile
+                </button>
+                <button @click="setActive('Dashboard')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
+                  Kembali
+                </button>
               </div>
             </div>
+          </div>
+        </template>
 
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-              <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                  Dokumen & Katalog
-                </h3>
-                <p class="mt-1 text-sm text-gray-500">
-                  Upload dokumen pendukung seperti katalog, price list, atau contoh produk
-                </p>
+        <!-- ======================= Pengaturan (ubah foto profil) ======================= -->
+        <template x-if="activeMenu === 'Settings'">
+          <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg shadow p-6">
+              <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-cog mr-2 text-blue-600"></i> Pengaturan Profil
+              </h2>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Saat ini -->
+                <div>
+                  <h3 class="font-medium text-gray-700 mb-2">Foto Saat Ini</h3>
+                  <img :src="profilePhotoUrl" alt="Foto Profil Saat Ini" class="w-28 h-28 rounded-full object-cover border">
+                </div>
+
+                <!-- Ganti foto -->
+                <div>
+                  <h3 class="font-medium text-gray-700 mb-2">Ganti Foto</h3>
+                  <input x-ref="fileInput" type="file" accept="image/*" @change="onProfileFileChange" class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                  <template x-if="newProfilePhotoUrl">
+                    <div class="mt-4">
+                      <p class="text-sm text-gray-500 mb-2">Pratinjau:</p>
+                      <img :src="newProfilePhotoUrl" alt="Preview Foto Profil" class="w-28 h-28 rounded-full object-cover border">
+                    </div>
+                  </template>
+                </div>
               </div>
-              <div class="px-4 py-5 sm:p-6">
-                <div class="file-upload rounded-lg p-6 text-center cursor-pointer" @click="openModal('uploadDocument')">
-                  <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                  <p class="text-sm text-gray-600">Klik untuk upload dokumen</p>
-                  <p class="text-xs text-gray-500 mt-1">Format: PDF, DOC, XLS, JPG, PNG (max. 10MB)</p>
-                </div>
 
-                <div class="mt-6">
-                  <h4 class="text-sm font-medium text-gray-700 mb-3">Dokumen Terupload</h4>
-                  <div class="space-y-3">
-                    <template x-for="doc in vendorDocuments" :key="doc.id">
-                      <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                        <div class="flex items-center">
-                          <i class="fas" :class="{
-                            'fa-file-pdf text-red-500': doc.type === 'pdf',
-                            'fa-file-word text-blue-500': doc.type === 'doc',
-                            'fa-file-excel text-green-500': doc.type === 'xls',
-                            'fa-file-image text-yellow-500': doc.type === 'image'
-                          }"></i>
-                          <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-900" x-text="doc.name"></p>
-                            <p class="text-xs text-gray-500" x-text="doc.size"></p>
-                          </div>
-                        </div>
-                        <div class="flex space-x-2">
-                          <button class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-download"></i>
-                          </button>
-                          <button class="text-red-600 hover:text-red-800">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </template>
-                  </div>
-                </div>
+              <div class="mt-6 flex items-center space-x-3">
+                <button @click="saveNewProfilePhoto" :disabled="!newProfilePhotoUrl" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Simpan
+                </button>
+                <button @click="cancelNewProfilePhoto" :disabled="!newProfilePhotoUrl" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Batal
+                </button>
+                <!-- 'Lihat foto saat ini' DIHAPUS; tambahkan tombol Kembali -->
+                <button @click="setActive('Profile')" class="ml-auto px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
+                  Kembali
+                </button>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Logout View -->
+        <template x-if="activeMenu === 'Logout'">
+          <div class="flex items-center justify-center h-full">
+            <div class="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
+              <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                <i class="fas fa-sign-out-alt text-blue-600 text-2xl"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">Keluar dari Sistem</h2>
+              <p class="text-gray-600 mb-6">Apakah Anda yakin ingin keluar dari sistem?</p>
+              <div class="flex justify-center space-x-4">
+                <button @click="activeMenu = 'Dashboard'" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                  Batal
+                </button>
+                <button @click="logout()" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+                  Ya, Keluar
+                </button>
               </div>
             </div>
           </div>
@@ -1067,65 +1178,39 @@
       </main>
     </div>
 
-    <!-- Modals -->
-    <!-- Add Product Modal -->
-    <div x-show="modalOpen === 'addProduct'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- ======= Modals (tetap sama) ======= -->
+    <!-- Assign Lead Modal -->
+    <div x-show="modalOpen === 'assignLead'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'addProduct'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div x-show="modalOpen === 'assignLead'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-        <div x-show="modalOpen === 'addProduct'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        <div x-show="modalOpen === 'assignLead'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
           <div>
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-              <i class="fas fa-box text-blue-600"></i>
+              <i class="fas fa-user-plus text-blue-600"></i>
             </div>
             <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Tambah Produk/Layanan</h3>
+              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Assign Lead</h3>
               <div class="mt-2">
                 <form class="space-y-4">
                   <div>
-                    <label for="productType" class="block text-sm font-medium text-gray-700 text-left">Jenis</label>
-                    <select id="productType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                      <option value="product">Produk Fisik</option>
-                      <option value="service">Layanan</option>
+                    <label class="block text-sm font-medium text-gray-700 text-left">Lead</label>
+                    <p class="mt-1 text-sm text-gray-500" x-text="selectedLead.project"></p>
+                  </div>
+                  <div>
+                    <label for="vendor" class="block text-sm font-medium text-gray-700 text-left">Pilih Vendor</label>
+                    <select id="vendor" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                      <option>Pilih Vendor</option>
+                      <template x-for="vendor in vendors" :key="vendor.id">
+                        <option :value="vendor.id" x-text="vendor.name"></option>
+                      </template>
                     </select>
                   </div>
                   <div>
-                    <label for="productName" class="block text-sm font-medium text-gray-700 text-left">Nama Produk/Layanan</label>
-                    <input type="text" id="productName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="productCategory" class="block text-sm font-medium text-gray-700 text-left">Kategori</label>
-                    <input type="text" id="productCategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="productPrice" class="block text-sm font-medium text-gray-700 text-left">Harga (Rp)</label>
-                    <input type="number" id="productPrice" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="productCommission" class="block text-sm font-medium text-gray-700 text-left">Persentase Komisi untuk Tim SEO (%)</label>
-                    <input type="number" id="productCommission" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="10">
-                  </div>
-                  <div>
-                    <label for="productDescription" class="block text-sm font-medium text-gray-700 text-left">Deskripsi</label>
-                    <textarea id="productDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 text-left">Upload Gambar/Dokumen</label>
-                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                      <div class="space-y-1 text-center">
-                        <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
-                        <div class="flex text-sm text-gray-600">
-                          <label class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
-                            <span>Upload file</span>
-                            <input type="file" class="sr-only">
-                          </label>
-                          <p class="pl-1">atau drag and drop</p>
-                        </div>
-                        <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX (max. 10MB)</p>
-                      </div>
-                    </div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700 text-left">Catatan (Opsional)</label>
+                    <textarea id="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
                   </div>
                 </form>
               </div>
@@ -1133,7 +1218,7 @@
           </div>
           <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
             <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
-              Simpan Produk
+              Assign Lead
             </button>
             <button @click="modalOpen = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
               Batal
@@ -1143,127 +1228,20 @@
       </div>
     </div>
 
-    <!-- Edit Product Modal -->
-    <div x-show="modalOpen === 'editProduct'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- Add SEO Report Modal -->
+    <div x-show="modalOpen === 'addReport'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'editProduct'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div x-show="modalOpen === 'addReport'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-        <div x-show="modalOpen === 'editProduct'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-          <div>
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-              <i class="fas fa-edit text-blue-600"></i>
-            </div>
-            <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Edit Produk/Layanan</h3>
-              <div class="mt-2">
-                <form class="space-y-4">
-                  <div>
-                    <label for="editProductType" class="block text-sm font-medium text-gray-700 text-left">Jenis</label>
-                    <select id="editProductType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                      <option value="product">Produk Fisik</option>
-                      <option value="service">Layanan</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="editProductName" class="block text-sm font-medium text-gray-700 text-left">Nama Produk/Layanan</label>
-                    <input type="text" id="editProductName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="editProductCategory" class="block text-sm font-medium text-gray-700 text-left">Kategori</label>
-                    <input type="text" id="editProductCategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="editProductPrice" class="block text-sm font-medium text-gray-700 text-left">Harga (Rp)</label>
-                    <input type="number" id="editProductPrice" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="editProductCommission" class="block text-sm font-medium text-gray-700 text-left">Persentase Komisi untuk Tim SEO (%)</label>
-                    <input type="number" id="editProductCommission" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="editProductDescription" class="block text-sm font-medium text-gray-700 text-left">Deskripsi</label>
-                    <textarea id="editProductDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 text-left">Gambar/Dokumen</label>
-                    <div class="mt-2 flex items-center">
-                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <i class="fas fa-image text-blue-600"></i>
-                      </div>
-                      <div class="ml-4">
-                        <button type="button" class="text-sm text-blue-600 hover:text-blue-500">Ganti File</button>
-                        <p class="text-xs text-gray-500">Current: product-image.jpg</p>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
-              Simpan Perubahan
-            </button>
-            <button @click="modalOpen = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-              Batal
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact Imersa Modal -->
-    <div x-show="modalOpen === 'contactImersa'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'contactImersa'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-        <div x-show="modalOpen === 'contactImersa'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full sm:p-6">
+        <div x-show="modalOpen === 'addReport'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
           <div>
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-              <i class="fas fa-headset text-green-600"></i>
+              <i class="fas fa-chart-line text-green-600"></i>
             </div>
             <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Hubungi Tim Imersa</h3>
-              <div class="mt-2">
-                <div class="bg-blue-50 p-4 rounded-md">
-                  <p class="text-sm text-gray-700 mb-3">Anda dapat menghubungi tim Imersa melalui WhatsApp untuk pertanyaan atau bantuan teknis:</p>
-                  <div class="flex items-center justify-center">
-                    <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
-                      <i class="fab fa-whatsapp mr-2 text-xl"></i> Chat via WhatsApp
-                    </a>
-                  </div>
-                  <p class="text-xs text-gray-500 mt-2">Nomor: 0812-3456-7890 (Admin Imersa)</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="mt-5 sm:mt-6">
-            <button @click="modalOpen = null" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
-              Tutup
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Request Optimization Modal -->
-    <div x-show="modalOpen === 'requestOptimization'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'requestOptimization'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-        <div x-show="modalOpen === 'requestOptimization'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-          <div>
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-purple-100">
-              <i class="fas fa-magic text-purple-600"></i>
-            </div>
-            <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Request Optimasi SEO</h3>
+              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Tambah Laporan SEO</h3>
               <div class="mt-2">
                 <form class="space-y-4">
                   <div>
@@ -1272,27 +1250,40 @@
                       <option>Pilih Proyek</option>
                       <option>Label Baju Stratlaya</option>
                       <option>Cetak Yasin Bangkalan</option>
+                      <option>Kursus Bahasa Inggris</option>
                     </select>
                   </div>
                   <div>
-                    <label for="keyword" class="block text-sm font-medium text-gray-700 text-left">Keyword Target</label>
-                    <input type="text" id="keyword" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: label baju murah surabaya">
+                    <label for="keyword" class="block text-sm font-medium text-gray-700 text-left">Keyword</label>
+                    <input type="text" id="keyword" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label for="position" class="block text-sm font-medium text-gray-700 text-left">Posisi</label>
+                      <input type="number" id="position" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                      <label for="change" class="block text-sm font-medium text-gray-700 text-left">Perubahan</label>
+                      <div class="flex">
+                        <select class="mt-1 block w-1/3 border border-gray-300 rounded-l-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                          <option value="up">Naik</option>
+                          <option value="down">Turun</option>
+                        </select>
+                        <input type="number" id="change" class="mt-1 block w-2/3 border-l-0 border border-gray-300 rounded-r-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                      </div>
+                    </div>
                   </div>
                   <div>
-                    <label for="currentPosition" class="block text-sm font-medium text-gray-700 text-left">Posisi Saat Ini</label>
-                    <input type="number" id="currentPosition" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: 15">
-                  </div>
-                  <div>
-                    <label for="requestDetails" class="block text-sm font-medium text-gray-700 text-left">Detail Request</label>
-                    <textarea id="requestDetails" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Jelaskan apa yang ingin dioptimalkan (konten, backlink, dll)"></textarea>
+                    <label for="notes" class="block text-sm font-medium text-gray-700 text-left">Catatan</label>
+                    <textarea id="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
                   </div>
                 </form>
               </div>
             </div>
           </div>
           <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:col-start-2 sm:text-sm">
-              Kirim Request
+            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+              Simpan Laporan
             </button>
             <button @click="modalOpen = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
               Batal
@@ -1302,163 +1293,54 @@
       </div>
     </div>
 
-    <!-- Edit Profile Modal -->
-    <div x-show="modalOpen === 'editProfile'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- New Feedback Modal -->
+    <div x-show="modalOpen === 'newFeedback'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'editProfile'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div x-show="modalOpen === 'newFeedback'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-        <div x-show="modalOpen === 'editProfile'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        <div x-show="modalOpen === 'newFeedback'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
           <div>
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-              <i class="fas fa-user-edit text-blue-600"></i>
+              <i class="fas fa-comment-dots text-blue-600"></i>
             </div>
             <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Edit Profil Vendor</h3>
+              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Beri Feedback</h3>
               <div class="mt-2">
                 <form class="space-y-4">
                   <div>
-                    <label for="vendorName" class="block text-sm font-medium text-gray-700 text-left">Nama Bisnis</label>
-                    <input type="text" id="vendorName" x-model="vendorProfile.name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <label for="vendor" class="block text-sm font-medium text-gray-700 text-left">Vendor</label>
+                    <select id="vendor" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                      <option>Pilih Vendor</option>
+                      <template x-for="vendor in vendors" :key="vendor.id">
+                        <option :value="vendor.id" x-text="vendor.name"></option>
+                      </template>
+                    </select>
                   </div>
                   <div>
-                    <label for="businessType" class="block text-sm font-medium text-gray-700 text-left">Jenis Bisnis</label>
-                    <input type="text" id="businessType" x-model="vendorProfile.businessType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <label for="project" class="block text-sm font-medium text-gray-700 text-left">Proyek</label>
+                    <select id="project" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                      <option>Pilih Proyek</option>
+                      <option>Label Baju Stratlaya</option>
+                      <option>Cetak Yasin Bangkalan</option>
+                      <option>Kursus Bahasa Inggris</option>
+                    </select>
                   </div>
                   <div>
-                    <label for="vendorEmail" class="block text-sm font-medium text-gray-700 text-left">Email</label>
-                    <input type="email" id="vendorEmail" x-model="vendorProfile.email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="whatsappNumber" class="block text-sm font-medium text-gray-700 text-left">Nomor WhatsApp</label>
-                    <input type="text" id="whatsappNumber" x-model="vendorProfile.whatsapp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="vendorAddress" class="block text-sm font-medium text-gray-700 text-left">Alamat</label>
-                    <textarea id="vendorAddress" x-model="vendorProfile.address" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 text-left">Foto Profil</label>
-                    <div class="mt-1 flex items-center">
-                      <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                        <img class="h-full w-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Profile photo">
-                      </span>
-                      <button type="button" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Ganti
-                      </button>
-                    </div>
+                    <label for="feedback" class="block text-sm font-medium text-gray-700 text-left">Feedback</label>
+                    <textarea id="feedback" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Tulis feedback untuk optimasi..."></textarea>
                   </div>
                 </form>
               </div>
             </div>
           </div>
           <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-            <button type="button" @click="saveProfile" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
-              Simpan Perubahan
+            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+              Kirim Feedback
             </button>
             <button @click="modalOpen = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
               Batal
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Upload Document Modal -->
-    <div x-show="modalOpen === 'uploadDocument'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'uploadDocument'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-        <div x-show="modalOpen === 'uploadDocument'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-          <div>
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-              <i class="fas fa-file-upload text-blue-600"></i>
-            </div>
-            <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Upload Dokumen</h3>
-              <div class="mt-2">
-                <div class="file-upload rounded-lg p-6 text-center cursor-pointer" @click="$refs.fileInput.click()">
-                  <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                  <p class="text-sm text-gray-600">Klik untuk memilih file atau drag and drop</p>
-                  <p class="text-xs text-gray-500 mt-1">Format: PDF, DOC, XLS, JPG, PNG (max. 10MB)</p>
-                  <input type="file" class="hidden" x-ref="fileInput" @change="handleFileUpload">
-                </div>
-                <div x-show="uploadedFile" class="mt-4">
-                  <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div class="flex items-center">
-                      <i class="fas" :class="{
-                        'fa-file-pdf text-red-500': uploadedFile.type === 'pdf',
-                        'fa-file-word text-blue-500': uploadedFile.type === 'doc',
-                        'fa-file-excel text-green-500': uploadedFile.type === 'xls',
-                        'fa-file-image text-yellow-500': uploadedFile.type === 'image'
-                      }"></i>
-                      <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-900" x-text="uploadedFile.name"></p>
-                        <p class="text-xs text-gray-500" x-text="uploadedFile.size"></p>
-                      </div>
-                    </div>
-                    <button @click="uploadedFile = null" class="text-red-600 hover:text-red-800">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-            <button type="button" @click="submitDocument" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
-              Upload Dokumen
-            </button>
-            <button @click="modalOpen = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-              Batal
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Notifications Modal -->
-    <div x-show="modalOpen === 'notifications'" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="modalOpen === 'notifications'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-        <div x-show="modalOpen === 'notifications'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full sm:p-6">
-          <div>
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-              <i class="fas fa-bell text-blue-600"></i>
-            </div>
-            <div class="mt-3 text-center sm:mt-5">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Notifikasi</h3>
-              <div class="mt-2">
-                <div class="space-y-4">
-                  <template x-for="notification in notifications" :key="notification.id">
-                    <div class="flex items-start">
-                      <div class="flex-shrink-0 pt-0.5">
-                        <i class="fas" :class="{
-                          'fa-bullhorn text-yellow-500': notification.type === 'announcement',
-                          'fa-bullseye text-blue-500': notification.type === 'lead',
-                          'fa-money-bill-wave text-green-500': notification.type === 'commission'
-                        }"></i>
-                      </div>
-                      <div class="ml-3 flex-1">
-                        <p class="text-sm font-medium text-gray-900" x-text="notification.title"></p>
-                        <p class="text-sm text-gray-500" x-text="notification.message"></p>
-                        <p class="text-xs text-gray-400 mt-1" x-text="notification.time"></p>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="mt-5 sm:mt-6">
-            <button @click="modalOpen = null" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
-              Tutup
             </button>
           </div>
         </div>
@@ -1467,90 +1349,104 @@
   </div>
 
   <script>
-    function vendorDashboard() {
+    function seoDashboard() {
       return {
         sidebarOpen: window.innerWidth > 768,
         profileDropdownOpen: false,
         modalOpen: null,
         activeMenu: 'Dashboard',
+        activeChat: null,
         searchKeyword: '',
         leadFilter: 'all',
-        productFilter: 'all',
+        reportFilter: 'all',
         keywordFilter: 'all',
         commissionFilter: 'all',
-        messageFilter: 'all',
-        optimizationFilter: 'all',
-        uploadedFile: null,
+        feedbackFilter: 'all',
+        selectedLead: {},
+
+        /* ====== Tambahan untuk foto profil ====== */
+        profilePhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=512&h=512&q=80',
+        newProfilePhotoUrl: null,
 
         stats: {
-          newLeads: 5,
-          unprocessedLeads: 3,
-          processedLeads: 24,
-          currentMonthCommission: 1250000,
-          keywordsPage1: 8,
-          unpaidCommissions: 2,
-          unreadMessages: 3,
-          unreadNotifications: 1
+          newLeads: 24,
+          distributedLeads: 156,
+          rankingUp: 38,
+          pendingCommissions: 12,
+          unreadMessages: 5,
+          unreadNotifications: 3,
+          totalKeywords: 128,
+          keywordsPage1: 42,
+          keywordsPage2: 35,
+          keywordsPage3: 51,
+          keywordsUp: 28,
+          keywordsDown: 15,
+          pendingFeedbacks: 3
         },
-        recentLeads: [
-          { id: 1001, project: 'Label Baju Sidoarjo', customer: 'Ridzy', status: 'new', date: '2025-08-15' },
-          { id: 1002, project: 'Villa Kaliurang', customer: 'Nasma', status: 'processed', date: '2025-08-14' },
-          { id: 1003, project: 'Kursus Bahasa Inggris', customer: 'Sisman', status: 'converted', date: '2025-08-14' }
+        newLeads: [
+          { id: 1, project: 'Label Baju Sidoarjo', customer: 'Ridzy', keyword: 'label baju murah', date: '2025-08-15' },
+          { id: 2, project: 'Villa Kaliurang', customer: 'Nasma', keyword: 'villa di kaliurang', date: '2025-08-15' },
+          { id: 3, project: 'Kursus Bahasa Inggris', customer: 'Sisman', keyword: 'kursus bahasa inggris online', date: '2025-08-14' },
+          { id: 4, project: 'Cetak Yasin', customer: 'TanBah', keyword: 'cetak yasin hardcover', date: '2025-08-14' }
         ],
-        topKeywords: [
-          { id: 1, text: 'label baju murah', project: 'Label Baju Stratlaya', position: 5, trend: 'up', change: 2 },
-          { id: 2, text: 'cetak yasin hardcover', project: 'Cetak Yasin Bangkalan', position: 12, trend: 'down', change: 3 },
-          { id: 3, text: 'kursus bahasa inggris online', project: 'Kursus Bahasa Inggris', position: 8, trend: 'up', change: 1 }
+        recentMessages: [
+          { id: 1, vendorId: 1, vendor: 'Labelin Aksara', text: 'Baik, akan segera saya follow up leadnya', time: '10:30' },
+          { id: 2, vendorId: 2, vendor: 'Yasin Barokah', text: 'Untuk cetak yasin ukuran A5 bisa?', time: '09:45' },
+          { id: 3, vendorId: 3, vendor: 'Kursus Pro', text: 'Sudah ada 3 siswa yang daftar via website', time: 'Kemarin' }
+        ],
+        needOptimization: [
+          { id: 1, keyword: 'baju kaos distro', position: '15', project: 'Label Baju Stratlaya', trend: 'down' },
+          { id: 2, keyword: 'villa murah di jogja', position: '8', project: 'Villa Kaliurang', trend: 'up' },
+          { id: 3, keyword: 'kursus bahasa inggris anak', position: '22', project: 'Kursus Bahasa Inggris', trend: 'down' }
+        ],
+        pendingCommissions: [
+          { id: 1, vendor: 'Labelin Aksara', project: 'Label Baju Stratlaya', leads: 8, amount: 1200000, date: '2025-08-01 - 2025-08-15' },
+          { id: 2, vendor: 'Yasin Barokah', project: 'Cetak Yasin Bangkalan', leads: 5, amount: 750000, date: '2025-08-01 - 2025-08-15' }
         ],
         leads: [
-          { id: 1001, customer: 'Ridzy', project: 'Label Baju Sidoarjo', status: 'new', date: '2025-08-15' },
-          { id: 1002, customer: 'Nasma', project: 'Villa Kaliurang', status: 'processed', date: '2025-08-14' },
-          { id: 1003, customer: 'Sisman', project: 'Kursus Bahasa Inggris', status: 'converted', date: '2025-08-14' },
-          { id: 1004, customer: 'TanBah', project: 'Cetak Yasin', status: 'new', date: '2025-08-13' }
+          { id: 1001, customer: 'Ridzy', project: 'Label Baju Sidoarjo', vendor: 'Labelin Aksara', status: 'converted', date: '2025-08-15' },
+          { id: 1002, customer: 'Nasma', project: 'Villa Kaliurang', vendor: 'Villa Asri', status: 'assigned', date: '2025-08-14' },
+          { id: 1003, customer: 'Sisman', project: 'Kursus Bahasa Inggris', vendor: 'Kursus Pro', status: 'new', date: '2025-08-14' },
+          { id: 1004, customer: 'TanBah', project: 'Cetak Yasin', vendor: 'Yasin Barokah', status: 'unresponsive', date: '2025-08-13' }
         ],
-        products: [
-          { id: 1, name: 'Label Baju Vinyl', type: 'product', category: 'Label', description: 'Label baju vinyl waterproof berbagai ukuran', price: 5000, commission: 10, leads: 12 },
-          { id: 2, name: 'Cetak Yasin Hardcover', type: 'product', category: 'Cetak', description: 'Cetak buku yasin hardcover dengan cover custom', price: 25000, commission: 15, leads: 8 },
-          { id: 3, name: 'Kursus Bahasa Inggris Dasar', type: 'service', category: 'Kursus', description: 'Kursus bahasa Inggris untuk pemula 10 pertemuan', price: 300000, commission: 20, leads: 5 }
+        seoReports: [
+          { id: 1, date: '2025-08-15', project: 'Label Baju Stratlaya', keyword: 'label baju murah', position: '5', trend: 'up', change: '2' },
+          { id: 2, date: '2025-08-14', project: 'Cetak Yasin Bangkalan', keyword: 'cetak yasin hardcover', position: '12', trend: 'down', change: '3' },
+          { id: 3, date: '2025-08-13', project: 'Kursus Bahasa Inggris', keyword: 'kursus bahasa inggris online', position: '8', trend: 'up', change: '1' }
         ],
         keywords: [
-          { id: 1, text: 'label baju murah', project: 'Label Baju Stratlaya', position: 5, trend: 'up', change: 2, volume: 1200 },
-          { id: 2, text: 'cetak yasin hardcover', project: 'Cetak Yasin Bangkalan', position: 12, trend: 'down', change: 3, volume: 850 },
-          { id: 3, text: 'kursus bahasa inggris online', project: 'Kursus Bahasa Inggris', position: 8, trend: 'up', change: 1, volume: 3200 }
+          { id: 1, text: 'label baju murah', project: 'Label Baju Stratlaya', position: '5', trend: 'up', change: '2', volume: '1200' },
+          { id: 2, text: 'cetak yasin hardcover', project: 'Cetak Yasin Bangkalan', position: '12', trend: 'down', change: '3', volume: '850' },
+          { id: 3, text: 'kursus bahasa inggris online', project: 'Kursus Bahasa Inggris', position: '8', trend: 'up', change: '1', volume: '3200' }
+        ],
+        vendorChats: [
+          { id: 1, vendor: 'Labelin Aksara', lastMessage: 'Baik, akan segera saya follow up leadnya', time: '10:30', status: 'Online', 
+            messages: [
+              { id: 1, sender: 'vendor', text: 'Selamat pagi, ada lead baru?', time: '10:00' },
+              { id: 2, sender: 'me', text: 'Iya, ada 1 lead untuk label baju', time: '10:15' },
+              { id: 3, sender: 'vendor', text: 'Baik, akan segera saya follow up leadnya', time: '10:30' }
+            ] 
+          },
+          { id: 2, vendor: 'Yasin Barokah', lastMessage: 'Untuk cetak yasin ukuran A5 bisa?', time: '09:45', status: 'Offline',
+            messages: [
+              { id: 1, sender: 'vendor', text: 'Mohon info untuk cetak yasin ukuran A5 bisa?', time: '09:45' }
+            ]
+          }
         ],
         commissions: [
-          { id: 1, period: 'Agustus 2025', leads: 8, amount: 800000, status: 'unpaid' },
-          { id: 2, period: 'Juli 2025', leads: 12, amount: 1200000, status: 'paid' },
-          { id: 3, period: 'Juni 2025', leads: 5, amount: 500000, status: 'paid' }
+          { id: 1, vendor: 'Labelin Aksara', period: '2025-08-01 - 2025-08-15', leads: 8, amount: 1200000, status: 'pending' },
+          { id: 2, vendor: 'Yasin Barokah', period: '2025-08-01 - 2025-08-15', leads: 5, amount: 750000, status: 'pending' },
+          { id: 3, vendor: 'Kursus Pro', period: '2025-07-01 - 2025-07-31', leads: 12, amount: 1800000, status: 'verified' }
         ],
-        messages: [
-          { id: 1, subject: 'Pembaruan Sistem', sender: 'Admin Imersa', preview: 'Kami telah memperbarui sistem dashboard vendor...', date: '2025-08-15', read: false },
-          { id: 2, subject: 'Pembayaran Komisi', sender: 'Finance Imersa', preview: 'Pembayaran komisi untuk bulan Juli telah diproses...', date: '2025-08-10', read: true },
-          { id: 3, subject: 'Request Optimasi', sender: 'Tim SEO Imersa', preview: 'Request optimasi untuk keyword "label baju" telah selesai...', date: '2025-08-05', read: true }
+        feedbacks: [
+          { id: 1, date: '2025-08-14', vendor: 'Labelin Aksara', project: 'Label Baju Stratlaya', text: 'Mohon optimasi untuk keyword "baju kaos distro" karena ranking turun dari 12 ke 15', status: 'pending' },
+          { id: 2, date: '2025-08-13', vendor: 'Yasin Barokah', project: 'Cetak Yasin Bangkalan', text: 'Konten untuk keyword "cetak yasin premium" perlu diperbaiki karena bounce rate tinggi', status: 'processed' },
+          { id: 3, date: '2025-08-10', vendor: 'Kursus Pro', project: 'Kursus Bahasa Inggris', text: 'Meta description untuk halaman utama perlu diupdate sesuai keyword target', status: 'completed' }
         ],
-        optimizationRequests: [
-          { id: 1, project: 'Label Baju Stratlaya', keyword: 'label baju murah', date: '2025-08-12', status: 'completed' },
-          { id: 2, project: 'Cetak Yasin Bangkalan', keyword: 'cetak yasin hardcover', date: '2025-08-05', status: 'in_progress' },
-          { id: 3, project: 'Kursus Bahasa Inggris', keyword: 'kursus bahasa inggris online', date: '2025-07-28', status: 'pending' }
-        ],
-        notifications: [
-          { id: 1, type: 'lead', title: 'Lead Baru', message: 'Anda mendapatkan lead baru untuk "Label Baju Sidoarjo"', time: '2 jam yang lalu' },
-          { id: 2, type: 'commission', title: 'Komisi Dibayar', message: 'Pembayaran komisi untuk bulan Juli telah diproses', time: '1 hari yang lalu' },
-          { id: 3, type: 'announcement', title: 'Pembaruan Sistem', message: 'Versi terbaru dashboard vendor telah dirilis', time: '3 hari yang lalu' }
-        ],
-        vendorProfile: {
-          name: 'Labelin Aksara',
-          businessType: 'Percetakan & Label',
-          email: 'labelin@example.com',
-          whatsapp: '081234567890',
-          address: 'Jl. Raya Surabaya No. 123',
-          joinDate: '15 Januari 2025',
-          status: 'verified'
-        },
-        vendorDocuments: [
-          { id: 1, name: 'Katalog Produk 2025.pdf', type: 'pdf', size: '2.4 MB' },
-          { id: 2, name: 'Price List Terbaru.xlsx', type: 'xls', size: '1.1 MB' },
-          { id: 3, name: 'Contoh Label.jpg', type: 'image', size: '3.2 MB' }
+        vendors: [
+          { id: 1, name: 'Labelin Aksara' },
+          { id: 2, name: 'Yasin Barokah' },
+          { id: 3, name: 'Kursus Pro' }
         ],
 
         // Computed properties
@@ -1558,154 +1454,77 @@
           if (this.leadFilter === 'all') return this.leads;
           return this.leads.filter(lead => lead.status === this.leadFilter);
         },
-        get filteredProducts() {
-          if (this.productFilter === 'all') return this.products;
-          return this.products.filter(product => product.type === this.productFilter);
+        get filteredReports() {
+          if (this.reportFilter === 'all') return this.seoReports;
+          return this.seoReports.filter(report => report.project.toLowerCase().includes(this.reportFilter));
         },
         get filteredKeywords() {
           if (this.keywordFilter === 'all') return this.keywords;
           if (this.keywordFilter === 'page1') return this.keywords.filter(k => k.position <= 10);
           if (this.keywordFilter === 'page2') return this.keywords.filter(k => k.position > 10 && k.position <= 20);
           if (this.keywordFilter === 'page3') return this.keywords.filter(k => k.position > 20);
+          if (this.keywordFilter === 'up') return this.keywords.filter(k => k.trend === 'up');
+          if (this.keywordFilter === 'down') return this.keywords.filter(k => k.trend === 'down');
           return this.keywords;
         },
         get filteredCommissions() {
           if (this.commissionFilter === 'all') return this.commissions;
           return this.commissions.filter(commission => commission.status === this.commissionFilter);
         },
-        get filteredMessages() {
-          if (this.messageFilter === 'all') return this.messages;
-          if (this.messageFilter === 'unread') return this.messages.filter(m => !m.read);
-          if (this.messageFilter === 'read') return this.messages.filter(m => m.read);
-          return this.messages;
-        },
-        get filteredOptimizations() {
-          if (this.optimizationFilter === 'all') return this.optimizationRequests;
-          return this.optimizationRequests.filter(req => req.status === this.optimizationFilter);
+        get filteredFeedbacks() {
+          if (this.feedbackFilter === 'all') return this.feedbacks;
+          return this.feedbacks.filter(feedback => feedback.status === this.feedbackFilter);
         },
 
         // Methods
-        setActive(name) { 
-          this.activeMenu = name; 
-          // Reset unread notifications if viewing notifications
-          if (name === 'Messages') {
-            this.stats.unreadMessages = 0;
-          }
-        },
+        setActive(name) { this.activeMenu = name; this.profileDropdownOpen = false; },
         openModal(modal, id = null) { 
-          this.modalOpen = modal;
-          // Handle modal data preparation if needed
-          if (modal === 'editProduct' && id) {
-            // In a real app, you would fetch the product data
-            console.log('Editing product with ID:', id);
+          this.modalOpen = modal; 
+          if (id && modal === 'assignLead') {
+            this.selectedLead = this.leads.find(lead => lead.id === id) || {};
           }
         },
-        searchKeywordHandler() {
-          // Handle search functionality
-          console.log('Searching for:', this.searchKeyword);
+        searchKeywordHandler() { console.log('Searching for:', this.searchKeyword); },
+        filterLeads() {}, filterReports() {}, filterKeywords() {}, filterCommissions() {}, filterFeedbacks() {},
+        assignLead(id) { console.log('Assigning lead:', id); this.modalOpen = null; },
+        verifyCommission(id) {
+          const index = this.commissions.findIndex(c => c.id === id);
+          if (index !== -1) { this.commissions[index].status = 'verified'; }
         },
-        filterLeads() {
-          // Filtering is handled by computed property
+        selectChat(id) { this.activeChat = id; },
+        getActiveChat() { return this.vendorChats.find(chat => chat.id === this.activeChat) || { messages: [] }; },
+        deleteReport(id) { this.seoReports = this.seoReports.filter(report => report.id !== id); },
+        logout() { console.log('User logged out'); window.location.href = '/login'; },
+
+        // ====== Handlers foto profil ======
+        onProfileFileChange(e) {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          this.newProfilePhotoUrl = URL.createObjectURL(file);
         },
-        filterProducts() {
-          // Filtering is handled by computed property
+        saveNewProfilePhoto() {
+          if (!this.newProfilePhotoUrl) return;
+          this.profilePhotoUrl = this.newProfilePhotoUrl;
+          this.cancelNewProfilePhoto(false);
+          alert('Foto profil berhasil diperbarui.');
         },
-        filterKeywords() {
-          // Filtering is handled by computed property
-        },
-        filterCommissions() {
-          // Filtering is handled by computed property
-        },
-        filterMessages() {
-          // Filtering is handled by computed property
-        },
-        filterOptimizations() {
-          // Filtering is handled by computed property
-        },
-        updateLeadStatus(id, status) {
-          const index = this.leads.findIndex(lead => lead.id === id);
-          if (index !== -1) {
-            this.leads[index].status = status;
-            // Update stats
-            if (status === 'processed') {
-              this.stats.newLeads--;
-              this.stats.unprocessedLeads--;
-              this.stats.processedLeads++;
-            } else if (status === 'converted') {
-              this.stats.processedLeads--;
-            }
-          }
-          // In real app, you would also update via API
-        },
-        deleteProduct(id) {
-          this.products = this.products.filter(product => product.id !== id);
-          // In real app, you would also delete via API
-        },
-        saveProfile() {
-          // In a real app, you would save the profile via API
-          console.log('Saving profile:', this.vendorProfile);
-          this.modalOpen = null;
-        },
-        handleFileUpload(event) {
-          const file = event.target.files[0];
-          if (file) {
-            // Determine file type
-            let type = 'other';
-            if (file.type.includes('pdf')) type = 'pdf';
-            else if (file.type.includes('word')) type = 'doc';
-            else if (file.type.includes('excel') || file.type.includes('sheet')) type = 'xls';
-            else if (file.type.includes('image')) type = 'image';
-            
-            this.uploadedFile = {
-              name: file.name,
-              type: type,
-              size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
-              file: file
-            };
-          }
-        },
-        submitDocument() {
-          if (this.uploadedFile) {
-            // In a real app, you would upload the file to the server
-            console.log('Uploading document:', this.uploadedFile);
-            
-            // Add to documents list (simulated)
-            this.vendorDocuments.push({
-              id: this.vendorDocuments.length + 1,
-              name: this.uploadedFile.name,
-              type: this.uploadedFile.type,
-              size: this.uploadedFile.size
-            });
-            
-            this.uploadedFile = null;
-            this.modalOpen = null;
-          }
-        },
-        logout() {
-          // In a real app, you would call your logout API
-          console.log('Logging out...');
-          // Redirect to login page
-          window.location.href = '/login';
+        cancelNewProfilePhoto(clearInput = true) {
+          if (clearInput && this.$refs.fileInput) this.$refs.fileInput.value = null;
+          this.newProfilePhotoUrl = null;
         },
 
         init() {
-          // Cek apakah ada preferensi sidebar di localStorage
           const sidebarPref = localStorage.getItem('sidebarOpen');
           if (sidebarPref !== null) {
             this.sidebarOpen = sidebarPref === 'true';
           } else {
-            // Default: buka di desktop, tutup di mobile
             this.sidebarOpen = window.innerWidth > 768;
           }
-          
           window.addEventListener('resize', () => {
-            // Di mobile, tetap tutup sidebar saat resize
             if (window.innerWidth <= 768) {
               this.sidebarOpen = false;
             }
           });
-          
-          // Simpan preferensi saat sidebar di-toggle
           this.$watch('sidebarOpen', (value) => {
             localStorage.setItem('sidebarOpen', value);
           });
@@ -1715,3 +1534,4 @@
   </script>
 </body>
 </html>
+```
